@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI CRM — Demo Panel (Research-backed) | RH Agency</title>
+  <meta name="description" content="RH Agency AI CRM demo: add credit, run AI niche + location selection, and launch to Google & Meta with production-ready best-practice notes." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#040618;--card:#071126;--accent1:#7c3aed;--accent2:#06b6d4}
+    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#01020a,var(--bg));color:#e6eef8}
+    .panel{background:linear-gradient(180deg,#071028,#081127);border:1px solid rgba(255,255,255,0.03);border-radius:12px;padding:16px;box-shadow:0 12px 40px rgba(2,6,23,0.6)}
+    .btn{padding:10px 14px;border-radius:10px;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white}
+    .muted{color:#9aa7b8;font-size:13px}
+    .chip{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-weight:600}
+    pre {background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;font-size:12px}
+    .step{background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);border-radius:10px;padding:12px}
+    .tip{background:#071026;padding:8px;border-radius:8px;color:#bfeefc;font-size:13px}
+  </style>
+</head>
+<body class="p-6">
+  <div class="max-w-7xl mx-auto">
+    <header class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,var(--accent1),var(--accent2));font-weight:800">RH</div>
+        <div>
+          <div class="text-xl font-bold">AI CRM — Demo Panel (Research-backed + Audited)</div>
+          <div class="text-xs muted">Visual audit, KPI charts, and step-by-step guidance for new users.</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-sm muted">Balance</div>
+        <div id="balance" class="chip">₹ 0</div>
+        <button id="topUpBtn" class="btn btn-primary">Top-up</button>
+      </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Left: Quick Onboarding -->
+      <aside class="lg:col-span-1">
+        <div class="panel">
+          <h4 class="font-bold">Quick Start (3 steps)</h4>
+          <ol class="mt-3 space-y-3">
+            <li class="step"><strong>1.</strong> Top-up demo credit — simulate spend.</li>
+            <li class="step"><strong>2.</strong> Connect ad accounts (Google / Meta) via the Connect buttons.</li>
+            <li class="step"><strong>3.</strong> Set budget & locations → Run AI → Review audit charts → Launch.</li>
+          </ol>
+          <div class="mt-4 tip">Tip: Use the <strong>Preview Launch</strong> to inspect all API actions before confirming.</div>
+        </div>
+
+        <div class="panel mt-4">
+          <h4 class="font-semibold">Connectors & Benchmarks</h4>
+          <div class="mt-3 space-y-2">
+            <div class="flex items-center justify-between"><div>Google Ads</div><button id="gBtn" class="px-3 py-1 rounded bg-white/6">Connect</button></div>
+            <div class="flex items-center justify-between"><div>Meta (FB+IG)</div><button id="mBtn" class="px-3 py-1 rounded bg-white/6">Connect</button></div>
+          </div>
+          <div class="mt-3 muted text-xs">Benchmarks used by the AI:<ul class="list-disc list-inside"><li>Google CPC (local): ₹15–₹45</li><li>Meta CPC (India): ₹5–₹20</li><li>Starter spend: ₹10k–50k / mo</li></ul></div>
+        </div>
+
+        <div class="panel mt-4">
+          <h4 class="font-semibold">Audit Summary</h4>
+          <div id="auditSummary" class="mt-3 text-sm muted">No audit yet — run AI suggestions to generate a local campaign audit with visuals.</div>
+        </div>
+      </aside>
+
+      <!-- Center: Controls & Results -->
+      <section class="lg:col-span-2 panel">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="font-bold text-lg">Configure Goal & Budget</h2>
+            <div class="muted">Set intent, monthly budget and locations — AI will propose niches, bids, and an audited plan.</div>
+          </div>
+          <div class="muted">Demo mode — no live API calls</div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+          <div>
+            <label class="text-xs muted">Monthly Ad Budget (₹)</label>
+            <input id="budget" type="number" value="30000" class="w-full mt-1 p-2 bg-black/20 rounded" />
+          </div>
+          <div>
+            <label class="text-xs muted">Primary Objective</label>
+            <select id="objective" class="w-full mt-1 p-2 bg-black/20 rounded">
+              <option value="leads">Leads</option>
+              <option value="calls">Calls / Bookings</option>
+              <option value="traffic">Website Visits</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs muted">Target Locations (comma-separated)</label>
+            <input id="locations" type="text" value="Mira Road, Thane" class="w-full mt-1 p-2 bg-black/20 rounded" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 mb-4">
+          <label class="muted">Aggression</label>
+          <select id="aggression" class="p-2 bg-black/20 rounded">
+            <option value="conservative">Conservative</option>
+            <option value="balanced" selected>Balanced</option>
+            <option value="aggressive">Aggressive</option>
+          </select>
+          <button id="runAiBtn" class="btn btn-primary">Run AI & Generate Audit</button>
+          <button id="resetBtn" class="px-3 py-2 rounded bg-white/6">Reset</button>
+        </div>
+
+        <div id="results" class="space-y-4"></div>
+
+      </section>
+
+      <!-- Right: Audit Charts & KPI -->
+      <aside class="lg:col-span-1 panel">
+        <h4 class="font-semibold">Audited KPIs</h4>
+        <canvas id="kpiChart" class="mt-3" width="300" height="140"></canvas>
+        <div class="mt-4">
+          <h5 class="font-semibold">Spend Forecast</h5>
+          <canvas id="spendChart" class="mt-2" width="300" height="140"></canvas>
+        </div>
+        <div class="mt-4">
+          <h5 class="font-semibold">CPL Breakdown</h5>
+          <canvas id="cplChart" class="mt-2" width="300" height="140"></canvas>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Campaigns & Launch area -->
+    <section class="panel mt-6">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold">Campaign Plan & Launch</h3>
+        <div class="muted text-sm">Preview and simulate API orchestration</div>
+      </div>
+      <div id="campaignsBlock" class="mt-4 space-y-3"></div>
+      <div class="mt-4">
+        <button id="previewBtn" class="btn btn-primary">Preview Launch</button>
+        <button id="exportBtn" class="px-3 py-2 rounded bg-white/6">Export Plan</button>
+      </div>
+    </section>
+
+    <!-- Modals -->
+    <div id="addCredit" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50">
+      <div class="bg-[#071126] p-6 rounded-lg w-full max-w-md">
+        <h4 class="font-bold">Add Credit (Demo)</h4>
+        <div class="muted text-xs mt-1">Simulated UPI/Card add — used to demonstrate spend logic.</div>
+        <div class="mt-3">
+          <input id="addAmt" type="number" value="20000" class="w-full p-2 bg-black/20 rounded" />
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="addCancel" class="px-3 py-2 rounded bg-white/6">Cancel</button>
+          <button id="addConfirm" class="btn btn-primary">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="previewModal" class="fixed inset-0 hidden items-center justify-center bg-black/60 z-50">
+      <div class="bg-[#071126] p-6 rounded-lg w-full max-w-3xl">
+        <h4 class="font-bold">Launch Preview</h4>
+        <p class="muted text-xs">This preview shows the API orchestration the panel would perform (simulated). Review before confirm.</p>
+        <pre id="previewContent" class="mt-3 h-60 overflow-auto"></pre>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="previewBack" class="px-3 py-2 rounded bg-white/6">Back</button>
+          <button id="previewConfirm" class="btn btn-primary">Confirm & Simulate Launch</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-6 text-xs muted">Notes: Benchmarks and recommendations are based on recent industry reports and platform docs. Production integration requires server-side OAuth, encrypted token vault, spend controls, and webhook-based lead plumbing.</footer>
+  </div>
+
+  <script>
+    // --- State & Benchmarks ---
+    const bench = { google: {cpc_low:15, cpc_high:45}, meta: {cpc_low:5, cpc_high:20}, smallBudgetMin:10000, smallBudgetMax:50000 };
+    const state = { connected:{}, balance:0, suggestions:[], campaigns:[], charts:{} };
+
+    // --- Utility & Audit log ---
+    function appendAudit(msg){ const el = document.getElementById('previewContent'); if(!el) return; const time = new Date().toLocaleTimeString(); el.textContent = time + ' — ' + msg + '
+' + (el.textContent||''); }
+
+    // --- Connectors ---
+    function connectAccount(which){ state.connected[which]=true; const btn = document.getElementById(which==='google'?'gBtn':'mBtn'); if(btn) btn.textContent='Connected'; appendAudit('Connected '+which+' (demo)'); }
+
+    // --- Modals (show/hide) ---
+    function showAddCredit(show){ const el=document.getElementById('addCredit'); if(!el) return; if(show){el.classList.remove('hidden');el.classList.add('flex')}else{el.classList.remove('flex');el.classList.add('hidden')} }
+    function showPreview(show){ const el=document.getElementById('previewModal'); if(!el) return; if(show){el.classList.remove('hidden');el.classList.add('flex')}else{el.classList.remove('flex');el.classList.add('hidden')} }
+
+    // --- Credit flow ---
+    function confirmAdd(){ const v=Number(document.getElementById('addAmt').value||0); state.balance += v; document.getElementById('balance').textContent='₹ '+state.balance.toLocaleString(); appendAudit('Credit added: ₹'+v); showAddCredit(false); }
+
+    // --- Charts ---
+    function createCharts(){
+      const kpiCtx = document.getElementById('kpiChart').getContext('2d');
+      state.charts.kpi = new Chart(kpiCtx, { type:'bar', data:{ labels:['Impr','Clicks','Leads'], datasets:[{ label:'Estimate', data:[0,0,0], backgroundColor:['#06b6d4','#7c3aed','#f59e0b'] }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} } });
+
+      const spendCtx = document.getElementById('spendChart').getContext('2d');
+      state.charts.spend = new Chart(spendCtx, { type:'line', data:{ labels:['Week1','Week2','Week3','Week4'], datasets:[{ label:'Projected Spend', data:[0,0,0,0], borderColor:'#7c3aed', backgroundColor:'rgba(124,58,237,0.12)', fill:true }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} } });
+
+      const cplCtx = document.getElementById('cplChart').getContext('2d');
+      state.charts.cpl = new Chart(cplCtx, { type:'doughnut', data:{ labels:[], datasets:[{ data:[], backgroundColor: ['#7c3aed','#06b6d4','#f59e0b'] }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}} } });
+    }
+
+    function updateCharts(metrics){ const m = metrics || {impr:0,clicks:0,leads:0,spendWeeks:[0,0,0,0],cplBreakdown:[]}; if(!state.charts.kpi) return; state.charts.kpi.data.datasets[0].data = [m.impr,m.clicks,m.leads]; state.charts.kpi.update(); state.charts.spend.data.datasets[0].data = m.spendWeeks; state.charts.spend.update(); state.charts.cpl.data.labels = m.cplBreakdown.map(x=>x.niche); state.charts.cpl.data.datasets[0].data = m.cplBreakdown.map(x=>x.value); state.charts.cpl.update(); }
+
+    // --- AI logic & rendering ---
+    function runAI(){
+      const budget = Number(document.getElementById('budget').value||0);
+      const objective = document.getElementById('objective').value;
+      const locations = document.getElementById('locations').value;
+      const aggression = document.getElementById('aggression').value;
+
+      const pool = [ {niche:'Salon & Beauty', googleCPC:20, metaCPC:6, estCPL:350}, {niche:'Dental Clinic', googleCPC:40, metaCPC:10, estCPL:900}, {niche:'Local Cafe', googleCPC:8, metaCPC:3, estCPL:120}, {niche:'Auto Repair', googleCPC:15, metaCPC:5, estCPL:300}, {niche:'Gym & Fitness', googleCPC:12, metaCPC:4, estCPL:250} ];
+
+      const scored = pool.map((p,i)=>{ let score = 0; const avgCPC = (p.googleCPC + p.metaCPC)/2; if(budget/avgCPC > 500) score +=2; if(objective==='calls' && p.niche.includes('Salon')) score+=1; if(aggression==='aggressive') score+=1; if(i===0) score += 0.2; return {...p,score}; }).sort((a,b)=>b.score-a.score);
+      const picks = scored.slice(0,3);
+      state.suggestions = picks;
+
+      const rdiv = document.getElementById('results'); rdiv.innerHTML='';
+      const header = document.createElement('div'); header.className='mb-2'; header.innerHTML = `<div class="font-semibold">AI Suggestions for <span class='muted'>${locations}</span></div><div class='muted text-xs'>Niches ranked by fit — click "Create" to add to campaign plan.</div>`;
+      rdiv.appendChild(header);
+
+      const grid = document.createElement('div'); grid.className='grid grid-cols-1 md:grid-cols-3 gap-3';
+      const campaignsBlock = document.getElementById('campaignsBlock'); campaignsBlock.innerHTML='';
+
+      let estImpr=0, estClicks=0, estLeads=0; const spendWeeks=[0,0,0,0]; const cplBreakdown = [];
+
+      picks.forEach((p,idx)=>{
+        const estDaily = Math.max(200, Math.round((budget/30) * (1/(idx+1))));
+        const estWeekSpend = estDaily * 7; for(let i=0;i<spendWeeks.length;i++) spendWeeks[i]+=estWeekSpend;
+        const estClicksN = Math.round((estDaily*30) / p.googleCPC);
+        const estLeadsN = Math.max(1, Math.round(estClicksN / 8));
+        estImpr += estDaily * 100; estClicks += estClicksN; estLeads += estLeadsN;
+        cplBreakdown.push({niche:p.niche, cpl:p.estCPL, value:p.estCPL});
+
+        const card = document.createElement('div'); card.className='p-3 bg-[#071126] rounded';
+        card.innerHTML = `<div class='font-semibold'>${p.niche}</div><div class='muted text-xs mt-1'>Google CPC ₹${p.googleCPC} · Meta CPC ₹${p.metaCPC}</div><div class='text-xs mt-2'>Est CPL ₹${p.estCPL}</div><div class='mt-3 flex gap-2'><button class='px-3 py-1 rounded bg-white/6 text-xs createBtn'>Create</button><button class='px-3 py-1 rounded bg-transparent border border-gray-700 text-xs explainBtn'>Why this?</button></div>`;
+        grid.appendChild(card);
+
+        const campRow = document.createElement('div'); campRow.className='p-3 bg-black/20 rounded flex items-center justify-between'; campRow.innerHTML = `<div><div class='font-semibold'>${p.niche}</div><div class='muted text-xs'>Daily ₹${estDaily} • Est CPL ₹${p.estCPL}</div></div><div class='muted text-xs'>Ready</div>`;
+        campaignsBlock.appendChild(campRow);
+        state.campaigns.push({id:Date.now()+''+idx,name:p.niche,daily:estDaily,googleBid:p.googleCPC,metaBid:p.metaCPC,estCPL:p.estCPL});
+      });
+
+      rdiv.appendChild(grid);
+      document.getElementById('auditSummary').textContent = `AI created ${picks.length} campaign suggestions for ${locations}. Estimated leads: ${estLeads}, est. weekly spend: ₹${Math.round(spendWeeks[0]).toLocaleString()}`;
+      updateCharts({impr:estImpr, clicks:estClicks, leads:estLeads, spendWeeks:spendWeeks, cplBreakdown:cplBreakdown});
+      appendAudit('AI generated suggestions: ' + picks.map(p=>p.niche).join(', '));
+
+      // attach handlers for generated buttons
+      grid.querySelectorAll('.createBtn').forEach((btn, i)=> btn.addEventListener('click', ()=>{ appendAudit('Added to plan: '+ picks[i].niche); renderCampaignsBlock(); }));
+      grid.querySelectorAll('.explainBtn').forEach((btn, i)=> btn.addEventListener('click', ()=>{ explain(picks[i].niche); }));
+    }
+
+    function renderCampaignsBlock(){ const cb = document.getElementById('campaignsBlock'); cb.innerHTML=''; state.campaigns.forEach(c=>{ const row = document.createElement('div'); row.className='p-3 bg-black/20 rounded flex items-center justify-between'; row.innerHTML = `<div><div class='font-semibold'>${c.name}</div><div class='muted text-xs'>Daily ₹${c.daily} • Est CPL ₹${c.estCPL}</div></div><div><button class='editBtn px-2 py-1 rounded bg-white/6 text-xs mr-2'>Edit</button><button class='removeBtn px-2 py-1 rounded bg-red-700 text-xs'>Remove</button></div>`; cb.appendChild(row); });
+      cb.querySelectorAll('.removeBtn').forEach((btn,i)=> btn.addEventListener('click', ()=>{ const id = state.campaigns[i].id; state.campaigns = state.campaigns.filter(c=>c.id!==id); renderCampaignsBlock(); appendAudit('Removed campaign '+id); }));
+    }
+
+    function explain(niche){ alert(niche + ' selected because of local demand, low competition on long-tail keywords, and high conversion propensity for targeted offers (demo note).'); }
+
+    // --- Preview & launch ---
+    function previewLaunch(){ const preview = {time:new Date().toLocaleString(), balance:state.balance, connected:state.connected, campaigns: state.campaigns.map(c=>({name:c.name,daily:c.daily,googleBid:c.googleBid,metaBid:c.metaBid}))}; document.getElementById('previewContent').textContent = JSON.stringify(preview,null,2); showPreview(true); }
+    function closePreview(){ showPreview(false); }
+
+    function executeLaunch(){ if(!state.connected.google || !state.connected.meta){ alert('Connect both Google & Meta accounts before launching (demo).'); appendAudit('Launch blocked — connectors missing'); closePreview(); return; }
+      const weekSpend = state.campaigns.reduce((s,c)=>s+(c.daily*7),0); if(state.balance < weekSpend){ if(!confirm('Balance ₹'+state.balance+' is less than estimated 1-week spend ₹'+weekSpend+'. Continue?')){ appendAudit('Launch cancelled — insufficient balance'); closePreview(); return; } }
+      state.campaigns.forEach(c=>{ appendAudit('Simulated API: Google Ads create campaign '+c.name+' daily₹'+c.daily+' bid₹'+c.googleBid); appendAudit('Simulated API: Meta Marketing create campaign '+c.name+' daily₹'+c.daily+' bid₹'+c.metaBid); }); state.balance -= weekSpend; document.getElementById('balance').textContent = '₹ '+state.balance.toLocaleString(); appendAudit('Launch executed — deducted ₹'+weekSpend); closePreview(); alert('Simulated launch complete — check audit log.'); }
+
+    function exportPlan(){ const data = {exported:new Date().toISOString(), campaigns:state.campaigns}; const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='rh-campaign-plan.json'; a.click(); URL.revokeObjectURL(url); appendAudit('Exported campaign plan'); }
+
+    // --- Init handlers ---
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // wire core buttons AFTER functions are defined to avoid reference errors
+      document.getElementById('topUpBtn').addEventListener('click', ()=> showAddCredit(true));
+      document.getElementById('addCancel').addEventListener('click', ()=> showAddCredit(false));
+      document.getElementById('addConfirm').addEventListener('click', confirmAdd);
+
+      document.getElementById('gBtn').addEventListener('click', ()=> connectAccount('google'));
+      document.getElementById('mBtn').addEventListener('click', ()=> connectAccount('meta'));
+
+      document.getElementById('runAiBtn').addEventListener('click', runAI);
+      document.getElementById('resetBtn').addEventListener('click', ()=>{ state.suggestions=[]; state.campaigns=[]; document.getElementById('results').innerHTML=''; document.getElementById('campaignsBlock').innerHTML=''; document.getElementById('auditSummary').textContent='No audit yet — run AI suggestions to generate a local campaign audit with visuals.'; updateCharts({impr:0,clicks:0,leads:0,spendWeeks:[0,0,0,0],cplBreakdown:[]}); appendAudit('Cleared suggestions and campaigns'); });
+
+      document.getElementById('previewBtn').addEventListener('click', previewLaunch);
+      document.getElementById('exportBtn').addEventListener('click', exportPlan);
+      document.getElementById('previewBack').addEventListener('click', closePreview);
+      document.getElementById('previewConfirm').addEventListener('click', executeLaunch);
+
+      // create charts
+      try{ createCharts(); document.getElementById('previewContent').textContent = 'Audit log — actions will appear here.'; } catch(e){ console.error('Chart init error',e); }
+    });
+  </script>
+</body>
+</html>
